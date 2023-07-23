@@ -89,15 +89,9 @@ class Placar:
         print(f"Sudeste:\nForças monarquistas: {g.count('m')}\nForças republicanas: {g.count('r')}")
         print(f"Norte:\nForças monarquistas: {h.count('m')}\nForças republicanas: {h.count('r')}")
         print('############################################################')
-        return
         
-class ListaEventCards:
-    def __init__(self):
-        self.cartas = []
-    
-    def inserir_cartas(self, carta):
-        self.cartas.append(carta)
-    
+        
+
 class Regiao:
     def __init__(self, nome, espacos) -> None:
         self.nome = nome
@@ -130,13 +124,8 @@ class Regiao:
             for i in range(len(self.total)): #primeiro preenche os vazios disponíveis
                 if self.total[i] == 0:
                     self.total[i] = 'm'
-                    a-=1            
-            for i in range(len(self.total)): #depois começa a inverter as forças
-                if self.total[i] == 'r':
-                    self.total[i] = 'm'
-                    a-=1
-                    if a == 0:
-                        return
+                    a-=1           
+            
     def add_rep(self, a):
         if a == 0:
             print('Não é possível adicionar zero forças')
@@ -161,12 +150,7 @@ class Regiao:
                 if self.total[i] == 0:
                     self.total[i] = 'r'
                     a-=1            
-            for i in range(len(self.total)): #depois começa a inverter as forças
-                if self.total[i] == 'm':
-                    self.total[i] = 'r'
-                    a-=1
-                    if a == 0:
-                        return
+            
     def tira_mon(self, a):
         if a == 0:
             print('Não é possível retirar zero forças')

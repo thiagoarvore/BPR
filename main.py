@@ -1,15 +1,15 @@
-from classe import Regiao, EventCard, ListaEventCards, Placar
+from classe import Regiao, EventCard, Placar
 import random
 import sys
-def verificar_fim(a, b, c, d):
+def verificar_fim(a, b, c, d):    
     if a.count('r')>a.count('m'):
         if b.count('r')>b.count('m'):
             if c.count('r')>c.count('m'):
-                if d.count('r')>d.count('m'):
+                if d.count('r')>d.count('m'):                    
                     print('')
                     print('Em seu jardim no palácio em Petrópolis você recebe uma carta. Ela conta que o Marechal Deodoro da Fonseca, \num de seus homens de confiança, entrou no quartel à cavalo e obrigou Visconde de Ouro Preto, seu ministro, \na se demitir. Você não acredita muito que isso vá muito longe, e prepara sua viagem para o \nRio de Janeiro para apaziguar a situação. Após dois dias, ao chegar no paço imperial, você \nrecebe a notícia: a câmara municipal tinha proclamado a república e você tem vinte e quatro horas para deixar o Brasil com sua família.')
                     print('')
-                    print(input('Escreva perdi para sair: '))
+                    input('Escreva perdi para sair: ')
                     sys.exit()
                         
     return False
@@ -30,10 +30,14 @@ def escolher_regiao(regioes):
             print('Opção Inválida. Digite um número da lista.')
 
 #e tirar uma força da região
-def tirar_forca():
+def tirar_forca():    
     regiao_escolhida = escolher_regiao(lista_regioes)
-    regiao_escolhida.tira_mon(1)
-    return
+    if 'm' in regiao_escolhida.total:
+        regiao_escolhida.tira_mon(1)
+    else:
+        print('Não há forças monarquistas nessa região')
+        tirar_forca()        
+    
 
 def turno_rei():
     print('Mas é claro que você não vai esperar sentado! Seus aliados estarão por todo o país, confabulando para seu poder não diminuir')
@@ -67,11 +71,12 @@ def ativar_turno_rei():
             regiao_escolhida.tira_rep(1)
             print(f"Você retirou uma força republicana do {regiao_escolhida.nome}")
             a-=1
+        placar.update()
     if a == 0:
         return
 
-def sortear_carta(cartas_restantes):
-    carta_sorteada = random.choice(cartas_restantes)    
+def sortear_carta(a):
+    carta_sorteada = random.choice(a)    
     print('')
     print(f"O evento é: {carta_sorteada.title}")
     print('')
@@ -79,20 +84,27 @@ def sortear_carta(cartas_restantes):
     print('')
     print(input('Aperte Enter para jogar um dado'))
     result = random.randint(1, 6)
+    print('')
     print(f"O resultado do dado é {result}")
-    if result == 6:
-            return print('As forças monarquistas evitaram que o evento acontecesse')
+    print('')
+    if result == 6:            
+        print('As forças monarquistas evitaram que o evento acontecesse')
+        del cartas_restantes[cartas_restantes.index(carta_sorteada)]
+        return
     if result  == 1 or result == 2:
         print(carta_sorteada.desc_efeito)
         print('')           
         print(f"Além disso, {carta_sorteada.title} deu tão certo que você ainda deve retirar uma força monarquista de um local à sua escolha")
-
-        tirar_forca()          
+        tirar_forca()
+        carta_sorteada.ativar_efeito()
+        del cartas_restantes[cartas_restantes.index(carta_sorteada)]                
         return
     if result == 3 or result == 4 or result == 5:        
         print(carta_sorteada.desc_efeito)
-    carta_sorteada.ativar_efeito()
-    del cartas_restantes[cartas_restantes.index(carta_sorteada)]
+        carta_sorteada.ativar_efeito()
+        del cartas_restantes[cartas_restantes.index(carta_sorteada)]
+
+
     
 
 #criação de espaços em cada região
@@ -118,7 +130,7 @@ carta1 = EventCard('Lei Áurea', 'Enfim a escravidão foi proibida no Brasil', '
                    [norde, 'tira', 2], [norde, 'add', 2], [sudes, 'tira', 2], [sudes, 'add', 2])
 carta2 = EventCard('Boom da Borracha', 'O norte do país é inundado de trabalhadores para extrair o látex', 'Substitua duas forças monarquistas no norte por forças republicanas', 2, 
                    [norte, 'tira', 2], [norte, 'add', 2])
-carta3 = EventCard('Maçonaria', 'As relações de D. Pedro II com a maçonaria não é vista com bons olhos pela Igreja Católica', 'Retire 1 força monarquista de cada região', 3, 
+carta3 = EventCard('Maçonaria', 'As relações de D. Pedro II com a maçonaria não são vistas com bons olhos pela Igreja Católica', 'Retire 1 força monarquista de cada região', 3, 
                    [norte, 'tira', 1], [norde, 'tira', 1], [sudes, 'tira', 1], [rio, 'tira', 1])
 carta4 = EventCard('Guerra do Paraguai', 'O exército brasileiro volta vitorioso do massacre ocorrido no Paraguai, mas com ideias republicanas cada vez mais presentes', 'Substitua três forças monarquistas do sudeste por forças republicanas\nSubstitua uma força monarquista no norte por uma força republicana\nRetire uma força monarquista do Rio de Janeiro', 4, 
                    [norte, 'tira', 1], [norte, 'add', 1], [sudes, 'tira', 3], [sudes, 'add', 3], [rio, 'tira', 1])
@@ -127,7 +139,7 @@ carta5 = EventCard('Partido Republicano', 'Foi fundado o partido republicano', '
 carta6 = EventCard('Charges em jornais', 'Jornalistas, intelectuais e artistas estão criticando o império e o imperador nos periódicos brasileiros', 'Substitua uma força monarquista no Rio de Janeiro por uma republicana\nSubstitua uma força monarquista no nordeste por uma republicana\nRetire uma força monarquista no sudeste', 6, 
                    [norde, 'tira', 1], [rio, 'add', 1], [norde, 'add', 1], [sudes, 'tira', 1], [rio, 'tira', 1])
 carta7 = EventCard('Demissão de ministros', 'Marechal Deodoro da Fonseca, aliado do imperador, obriga o ministro Visconde de Ouro Preto a se demitir', 'Substitua duas forças monarquistas no Rio de Janeiro por republicanas\nSubstitua duas forças monarquistas no sudeste por republicanas\nRetire uma força monarquista do nordeste\nRetire uma força monarquista do norte', 7, 
-                   [norde, 'tira', 1], [rio, 'add', 2], [sudes, 'add', 2], [sudes, 'tira', 2], [rio, 'tira', 2], [norte, 'add', 1])
+                   [norde, 'tira', 1], [rio, 'add', 2], [sudes, 'add', 2], [sudes, 'tira', 2], [rio, 'tira', 2], [norte, 'tira', 1])
 
 #criação da lista de cartas
 lista_cartas = []
@@ -163,7 +175,7 @@ def comecar_jogo():
     print('')
     print(input('Tecle ENTER para continuar'))
     print('O cenário político começa favorável à você:')
-    print(placar.update())
+    placar.update()
     print('')    
     print('A cada evento, você vai jogar um dado, dependendo do resultado, o evento pode tornar sua vida muito mais difícil')
     print('')
@@ -172,35 +184,55 @@ def comecar_jogo():
         return
     else: comecar_jogo()
 
-def turno():
-    turno = 1
-    print('')
-    print(f"Turno {turno}")
-    print('')
-    cartadavez = sortear_carta(cartas_restantes)
-    check_fim = verificar_fim(norte.total, sudes.total, rio.total, norte.total)
-    print(placar.update())
-    turno += 1
+def turno():    
+    sortear_carta(cartas_restantes)
+    placar.update()    
+    verificar_fim(norte.total, sudes.total, rio.total, norde.total)
 
 comecar_jogo()
+turn = 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
 ativar_turno_rei()
-print(placar.update())
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
 ativar_turno_rei()
-print(placar.update())
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
 ativar_turno_rei()
-print(placar.update())
+turn += 1
+print('')
+print(f"Turno {turn}")
+print('')
 turno()
 
 print('')
 print('Se você chegou até aqui e conseguiu, por sorte ou talento político,\nevitar que a república fosse proclamada, PARABÉNS!\nSeus descendentes continuarão sua linhagem real enquanto o povo brasileiro\nse mantén sobre o domínio cruel de uma família nobre.')
 print('')
-print(placar.update())
+placar.update()
 print('')
 input('Escreva ganhei para sair: ')
 
