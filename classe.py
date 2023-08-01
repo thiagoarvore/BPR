@@ -1,4 +1,7 @@
 import random
+import pygame
+import os
+import sys
 class EventCard:
     def __init__(self, title, descricao, desc_efeito, id, evento1=None, evento2=None, evento3=None, evento4=None, evento5=None, evento6=None) -> None:
         self.title = title
@@ -84,11 +87,16 @@ class Placar:
         f = self.b
         g = self.c
         h = self.d
-        print(f"Rio de Janeiro:\nForças monarquistas: {e.count('m')}\nForças republicanas: {e.count('r')}")
-        print(f"Nordeste:\nForças monarquistas: {f.count('m')}\nForças republicanas: {f.count('r')}")
-        print(f"Sudeste:\nForças monarquistas: {g.count('m')}\nForças republicanas: {g.count('r')}")
-        print(f"Norte:\nForças monarquistas: {h.count('m')}\nForças republicanas: {h.count('r')}")
-        print('############################################################')
+        result1 = f"Rio de Janeiro:\nForças monarquistas: {e.count('m')}\nForças republicanas: {e.count('r')}"
+        result2 = f"Nordeste:\nForças monarquistas: {f.count('m')}\nForças republicanas: {f.count('r')}"
+        result3 = f"Sudeste:\nForças monarquistas: {g.count('m')}\nForças republicanas: {g.count('r')}"
+        result4 = f"Norte:\nForças monarquistas: {h.count('m')}\nForças republicanas: {h.count('r')}"
+        
+        resultado = f"{result1}\n{result2}\n{result3}\n{result4}"
+        
+   
+        return resultado
+               
         
         
 
@@ -184,4 +192,67 @@ class Regiao:
                 a-=1
                 if a == 0:
                     return
-     
+
+class Botao():
+    def __init__(self, fundo, texto, regiao, efeito=None) -> None:
+        self.fundo = fundo
+        self.texto = texto
+        self.efeito = efeito
+        self.regiao = regiao
+
+def verificar_fim(a, b, c, d):    
+    if a.count('r')>a.count('m'):
+        if b.count('r')>b.count('m'):
+            if c.count('r')>c.count('m'):
+                if d.count('r')>d.count('m'):                    
+                    print('')
+                    print('Em seu jardim no palácio em Petrópolis você recebe uma carta. Ela conta que o Marechal Deodoro da Fonseca, \num de seus homens de confiança, entrou no quartel à cavalo e obrigou Visconde de Ouro Preto, seu ministro, \na se demitir. Você não acredita muito que isso vá muito longe, e prepara sua viagem para o \nRio de Janeiro para apaziguar a situação. Após dois dias, ao chegar no paço imperial, você \nrecebe a notícia: a câmara municipal tinha proclamado a república e você tem vinte e quatro horas para deixar o Brasil com sua família.')
+                    print('')
+                    input('Escreva perdi para sair: ')
+                    sys.exit()
+
+class Button:
+    def __init__(self, image, pos, text_input, font, hovering_color) -> None:
+        self.image = image
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
+        self.font = font
+        self.hovering_color = hovering_color
+        self.text_input = text_input
+        self.text = self.font.render(self.text_input, True, (0,0,0))     
+        if self.image is None:
+            self.image = self.text
+        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+    
+    def update(self, screen):
+        if self.image is not None:
+            screen.blit(self.image, self.rect)
+        screen.blit(self.text, self.text_rect)
+
+    def checkForInput(self, position):
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+            return True
+        return False
+
+    def changeColor(self, position, new_image):
+        self.new_image = new_image
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+            self.image = self.new_image
+
+class GoButton:
+    def __init__(self, image, pos) -> None:
+        self.image = image
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]        
+        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        
+
+    def update(self, screen):
+        if self.image is not None:
+            screen.blit(self.image, self.rect)        
+
+    def checkForInput(self, position):
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+            return True
+        return False
