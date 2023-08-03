@@ -97,9 +97,6 @@ class Placar:
    
         return resultado
                
-        
-        
-
 class Regiao:
     def __init__(self, nome, espacos) -> None:
         self.nome = nome
@@ -193,13 +190,6 @@ class Regiao:
                 if a == 0:
                     return
 
-class Botao():
-    def __init__(self, fundo, texto, regiao, efeito=None) -> None:
-        self.fundo = fundo
-        self.texto = texto
-        self.efeito = efeito
-        self.regiao = regiao
-
 def verificar_fim(a, b, c, d):    
     if a.count('r')>a.count('m'):
         if b.count('r')>b.count('m'):
@@ -256,3 +246,74 @@ class GoButton:
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
             return True
         return False
+
+class dice_result:
+    def __init__(self, result):
+        self.result = result
+
+    def dice_event(self, screen, fundo_texto_desc, fundo_texto_title, fonte_texto):
+        self.screen = screen
+        
+
+        if self.result == 6:
+            #substituir a descrição
+                        
+            pos_fundo_texto_x = 100
+            pos_fundo_texto_y = 230
+            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
+            #substituir o título
+            self.screen.blit(fundo_texto_title, (100, 80))
+            texto_eficacia = 'Os monarquistas evitaram que o evento ocorresse'
+            texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
+            pos_texto_x = pos_fundo_texto_x + 90
+            self.screen.blit(texto_linha, (pos_texto_x, 130))
+
+        if self.result  == 1 or self.result == 2:
+            #substituir a descrição
+            pos_fundo_texto_x = 100
+            pos_fundo_texto_y = 230
+            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
+            #substituir o título
+            self.screen.blit(fundo_texto_title, (100, 80))
+            texto_eficacia = 'Os republicanos obtiveram um enorme sucesso'
+            texto_eficacia2 = 'retire duas forças monarquistas'
+            texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
+            texto_linha2 = fonte_texto.render(texto_eficacia2, True, (0, 0, 0))
+            pos_texto_x = pos_fundo_texto_x + 100
+            self.screen.blit(texto_linha, (pos_texto_x, 115))
+            self.screen.blit(texto_linha2, (pos_texto_x+50, 150))
+
+        if self.result == 3 or self.result == 4 or self.result == 5:
+            #substituir a descrição
+            pos_fundo_texto_x = 100
+            pos_fundo_texto_y = 230
+            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
+            #substituir o título
+            self.screen.blit(fundo_texto_title, (100, 80))
+            texto_eficacia = 'Os republicanos tiveram sucesso'
+            texto_eficacia2 = 'retire uma força monarquista'
+            texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
+            texto_linha2 = fonte_texto.render(texto_eficacia2, True, (0, 0, 0))
+            pos_texto_x = pos_fundo_texto_x + 150
+            self.screen.blit(texto_linha, (pos_texto_x, 115))
+            self.screen.blit(texto_linha2, (pos_texto_x+20, 150))
+
+
+
+    def king_event(self):
+        pass
+        # if self.result == 6:
+        #     TELA = screen            
+        #     pos_fundo_texto_x = 100
+        #     pos_fundo_texto_y = 230
+        #     TELA.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
+        # if self.result  == 1 or self.result == 2:
+        #     TELA = screen            
+        #     pos_fundo_texto_x = 100
+        #     pos_fundo_texto_y = 230
+        #     TELA.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
+        # if self.result == 3 or self.result == 4 or self.result == 5:
+        #     TELA = screen            
+        #     pos_fundo_texto_x = 100
+        #     pos_fundo_texto_y = 230
+        #     TELA.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
