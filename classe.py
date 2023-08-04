@@ -41,34 +41,36 @@ class EventCard:
         if self.evento1 != None:
             regiao = self.evento1[0]
             if self.evento1[1] == 'tira':
-                regiao.tira_mon(self.evento1[2])
+                comando = self.evento1[2]
+                regiao.tira_mon(comando)
             if self.evento1[1] == 'add':
-                regiao.add_rep(self.evento1[2])
-        if self.evento2 != None:
+                comando2 = self.evento1[2]
+                regiao.add_rep(comando2)
+        elif self.evento2 != None:
             regiao = self.evento2[0]
             if self.evento2[1] == 'tira':
                 regiao.tira_mon(self.evento2[2])
             if self.evento2[1] == 'add':
                 regiao.add_rep(self.evento2[2])
-        if self.evento3 != None:
+        elif self.evento3 != None:
             regiao = self.evento3[0]
             if self.evento3[1] == 'tira':
                 regiao.tira_mon(self.evento3[2])
             if self.evento3[1] == 'add':
                 regiao.add_rep(self.evento3[2])
-        if self.evento4 != None:
+        elif self.evento4 != None:
             regiao = self.evento4[0]
             if self.evento4[1] == 'tira':
                 regiao.tira_mon(self.evento4[2])
             if self.evento4[1] == 'add':
                 regiao.add_rep(self.evento4[2])        
-        if self.evento5 != None:
+        elif self.evento5 != None:
             regiao = self.evento5[0]
             if self.evento5[1] == 'tira':
                 regiao.tira_mon(self.evento5[2])
             if self.evento5[1] == 'add':
                 regiao.add_rep(self.evento5[2])
-        if self.evento6 != None:
+        elif self.evento6 != None:
             regiao = self.evento6[0]
             if self.evento6[1] == 'tira':
                 regiao.tira_mon(self.evento6[2])
@@ -88,10 +90,13 @@ class Placar:
         g = self.c
         h = self.d
         result1 = f"Rio de Janeiro:\nForças monarquistas: {e.count('m')}\nForças republicanas: {e.count('r')}"
+        r1 = '\033[0m'+'Rio de Janeiro'+'\033[0m'
         result2 = f"Nordeste:\nForças monarquistas: {f.count('m')}\nForças republicanas: {f.count('r')}"
+        r2 = '\033[0m'+'Nordeste'+'\033[0m'
         result3 = f"Sudeste:\nForças monarquistas: {g.count('m')}\nForças republicanas: {g.count('r')}"
+        r3 = '\033[0m'+'Sudeste'+'\033[0m'
         result4 = f"Norte:\nForças monarquistas: {h.count('m')}\nForças republicanas: {h.count('r')}"
-        
+        r4 = '\033[0m'+'Norte'+'\033[0m'
         resultado = f"{result1}\n{result2}\n{result3}\n{result4}"
         
    
@@ -251,54 +256,35 @@ class dice_result:
     def __init__(self, result):
         self.result = result
 
-    def dice_event(self, screen, fundo_texto_desc, fundo_texto_title, fonte_texto):
+    def dice_event(self, screen, fundo_texto_title, fonte_texto, texto_desc):
         self.screen = screen
-        
-
+        self.texto_desc = texto_desc
+        pos_fundo_texto_x = 100
+        pos_fundo_texto_y = 230        
+        self.screen.blit(fundo_texto_title, (100, 180))
         if self.result == 6:
-            #substituir a descrição
-                        
-            pos_fundo_texto_x = 100
-            pos_fundo_texto_y = 230
-            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
-            #substituir o título
-            self.screen.blit(fundo_texto_title, (100, 80))
             texto_eficacia = 'Os monarquistas evitaram que o evento ocorresse'
             texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
             pos_texto_x = pos_fundo_texto_x + 90
-            self.screen.blit(texto_linha, (pos_texto_x, 130))
+            self.screen.blit(texto_linha, (pos_texto_x, 225))
 
         if self.result  == 1 or self.result == 2:
-            #substituir a descrição
-            pos_fundo_texto_x = 100
-            pos_fundo_texto_y = 230
-            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
-            #substituir o título
-            self.screen.blit(fundo_texto_title, (100, 80))
             texto_eficacia = 'Os republicanos obtiveram um enorme sucesso'
             texto_eficacia2 = 'retire duas forças monarquistas'
             texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
             texto_linha2 = fonte_texto.render(texto_eficacia2, True, (0, 0, 0))
             pos_texto_x = pos_fundo_texto_x + 100
-            self.screen.blit(texto_linha, (pos_texto_x, 115))
-            self.screen.blit(texto_linha2, (pos_texto_x+50, 150))
+            self.screen.blit(texto_linha, (pos_texto_x, 210))
+            self.screen.blit(texto_linha2, (pos_texto_x+50, 240))
 
         if self.result == 3 or self.result == 4 or self.result == 5:
-            #substituir a descrição
-            pos_fundo_texto_x = 100
-            pos_fundo_texto_y = 230
-            self.screen.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
-            #substituir o título
-            self.screen.blit(fundo_texto_title, (100, 80))
             texto_eficacia = 'Os republicanos tiveram sucesso'
             texto_eficacia2 = 'retire uma força monarquista'
             texto_linha = fonte_texto.render(texto_eficacia, True, (0, 0, 0))
             texto_linha2 = fonte_texto.render(texto_eficacia2, True, (0, 0, 0))
             pos_texto_x = pos_fundo_texto_x + 150
-            self.screen.blit(texto_linha, (pos_texto_x, 115))
-            self.screen.blit(texto_linha2, (pos_texto_x+20, 150))
-
-
+            self.screen.blit(texto_linha, (pos_texto_x, 210))
+            self.screen.blit(texto_linha2, (pos_texto_x+20, 240))
 
     def king_event(self):
         pass

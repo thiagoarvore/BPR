@@ -8,7 +8,7 @@ pygame.display.set_caption('Batalha Pela República')
 
 largura, altura = 1200, 800
 FONTE_TEXTOS = pygame.font.SysFont('microsoftsansserif', 20)
-FONTE_PONTOS = pygame.font.SysFont('arial', 12, True)
+FONTE_PONTOS = pygame.font.SysFont('arial', 15, True)
 TELA = pygame.display.set_mode((largura, altura))
 
 IMAGEM_BACKGROUND = pygame.transform.scale2x((pygame.image.load(os.path.join('images', 'pergaminho.jpg'))))
@@ -17,6 +17,7 @@ IMAGEM_BG_TITULO_EVENTO = pygame.transform.scale(IMAGEM_TEXTO, (600, 230-100))
 IMAGEM_BG_DESC_EVENTO = pygame.transform.scale(IMAGEM_TEXTO, (600, 230-50))
 IMAGEM_BOTAO_PROX = (pygame.image.load(os.path.join('images', 'botao_prox.png')))
 IMAGEM_PLACAR = (pygame.image.load(os.path.join('images', 'placar.png')))
+IMAGEM_PLACAR = pygame.transform.scale(IMAGEM_PLACAR, (200+80, 272+80))
 sprite_sheet = pygame.image.load(os.path.join('images', 'dices.png')).convert_alpha()
 
 norte = Regiao('Norte', 5)
@@ -36,6 +37,17 @@ norte.add_rep(1)
 sudes.add_rep(2)
 placar = Placar(rio.total, norde.total, sudes.total, norte.total)
 
+#criação de botoes
+norte_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(420, 480), text_input='Norte',
+                    font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
+norde_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(790, 480), text_input='Nordeste',
+                    font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
+rio_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(420, 600), text_input='Norte',
+                    font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
+sudes_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(790, 600), text_input='Norte',
+                    font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
+buton_list = [norte_buton, norde_buton, rio_buton, sudes_buton]
+
 class Dado(pygame.sprite.Sprite):
     def __init__(self) -> None:
         pygame.sprite.Sprite.__init__(self)
@@ -44,15 +56,15 @@ class Dado(pygame.sprite.Sprite):
 
         for i in range(6):
             img = sprite_sheet.subsurface((i*100,0), (100,100))
-            img = pygame.transform.scale(img, (100/2, 100/2))
+            img = pygame.transform.scale(img, (100/2+5, 100/2+5))
             self.imagens_dices.append(img)
         self.index_lista = 0
         self.image = self.imagens_dices[self.index_lista]
         self.rect = self.image.get_rect()
-        self.rect.x = 580
-        self.rect.y = 500
-        self.x_pos = 580
-        self.y_pos = 500        
+        self.rect.x = 950
+        self.rect.y = 570
+        self.x_pos = 950
+        self.y_pos = 570        
 
     def update(self):
         if self.sorteado != None:
@@ -70,8 +82,8 @@ class Dado(pygame.sprite.Sprite):
         fundo_texto_result = pygame.transform.scale(IMAGEM_TEXTO, (600+200, 230-100))
         pos_fundo_texto_x = largura // 2-390
         pos_texto_x = pos_fundo_texto_x + 300
-        TELA.blit(fundo_texto_result, (pos_fundo_texto_x, 650))
-        TELA.blit(texto_linha, (pos_texto_x+35, 700))
+        TELA.blit(fundo_texto_result, (pos_fundo_texto_x, 670))
+        TELA.blit(texto_linha, (pos_texto_x+35, 720))
         return result
             
     def checkForInput(self, position):        
@@ -85,6 +97,53 @@ def turno():
     sortear_carta(cartas_restantes)
     placar.update()    
     verificar_fim(norte.total, sudes.total, rio.total, norde.total)
+
+def efeito_func(carta):
+    while True:
+        aplicado = False
+        GAME_MOUSE_POS = pygame.mouse.get_pos()
+        cartadavez = carta
+        TELA.fill((0,0,0))
+        TELA.blit(IMAGEM_BACKGROUND, (0, 0))
+        if aplicado == True:
+            cartadavez.ativar_efeito()
+            aplicado = False
+        else:            
+            for button in [norde_buton, norte_buton, rio_buton, sudes_buton]:
+                button.changeColor(GAME_MOUSE_POS, pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
+                button.update(TELA)
+            number = dado.sorteado()
+            mostrar_placar()
+            dado_evento = dice_result(number)
+            dado_evento.dice_event(TELA, IMAGEM_BG_TITULO_EVENTO, FONTE_TEXTOS, cartadavez.descricao)
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if norte_buton.checkForInput(GAME_MOUSE_POS):
+                        intro()
+                    if norde_buton.checkForInput(GAME_MOUSE_POS):
+                        intro()
+                    if sudes_buton.checkForInput(GAME_MOUSE_POS):
+                        intro()
+                    if rio_buton.checkForInput(GAME_MOUSE_POS):
+                        intro()
+                    if dado.checkForInput(GAME_MOUSE_POS):
+                        sorteado = True
+                        aplicado = True
+        pygame.display.update()
+
+def mostrar_placar():
+    TELA.blit(IMAGEM_PLACAR, (820, 50))#lugar ótimo já
+    info_pontos = placar.update()    
+    linhas_info = info_pontos.split('\n')
+    pos_y_placar = 100
+    for linha_placar in linhas_info:
+        texto_linha = FONTE_PONTOS.render(linha_placar, True, (0, 0, 0))
+        pos_x_placar = largura // 2 - texto_linha.get_width() // 2 +365 # Centraliza horizontalmente
+        TELA.blit(texto_linha, (pos_x_placar, pos_y_placar))
+        pos_y_placar += texto_linha.get_height() + 5  # Espaçamento entre as linhas
 
 def sortear_carta(a):
     carta_sorteada = random.choice(a)
@@ -133,19 +192,19 @@ def tirar_forca():
         tirar_forca() 
 
 #criação das cartas de eventos
-carta1 = EventCard('Lei Áurea', ' \nEnfim a escravidão foi proibida no Brasil', '(mas isso não significou uma grande melhoria na vida dos negros)\nSubstitua duas forças monarquistas do nordeste por forças republicanas\nSubstitua duas forças monarquistas do sudeste por forças republicanas', 1, 
+carta1 = EventCard('Lei Áurea', '\nEnfim a escravidão foi proibida no Brasil\n(mas isso não significou uma imediata\nmelhoria na vida dos negros','Substitua duas forças monarquistas do nordeste por forças republicanas\nSubstitua duas forças monarquistas do sudeste por forças republicanas', 1, 
                    [norde, 'tira', 2], [norde, 'add', 2], [sudes, 'tira', 2], [sudes, 'add', 2])
 carta2 = EventCard('Boom da Borracha', 'O norte do país é inundado de\ntrabalhadores para extrair o látex', 'Substitua duas forças monarquistas no norte por forças republicanas', 2, 
                    [norte, 'tira', 2], [norte, 'add', 2])
-carta3 = EventCard('Maçonaria', 'As relações de D. Pedro II com a maçonaria\nnão são vistas com bons olhos pela Igreja Católica', 'Retire 1 força monarquista de cada região', 3, 
+carta3 = EventCard('Maçonaria', ' \nAs relações de D. Pedro II com a maçonaria\nnão são vistas com bons olhos pela Igreja Católica', 'Retire 1 força monarquista de cada região', 3, 
                    [norte, 'tira', 1], [norde, 'tira', 1], [sudes, 'tira', 1], [rio, 'tira', 1])
 carta4 = EventCard('Guerra do Paraguai', 'O exército brasileiro volta vitorioso\ndo massacre ocorrido no Paraguai,\nmas com ideias republicanas cada vez mais presentes', 'Substitua três forças monarquistas do sudeste por forças republicanas\nSubstitua uma força monarquista no norte por uma força republicana\nRetire uma força monarquista do Rio de Janeiro', 4, 
                    [norte, 'tira', 1], [norte, 'add', 1], [sudes, 'tira', 3], [sudes, 'add', 3], [rio, 'tira', 1])
 carta5 = EventCard('Partido Republicano', ' \nFoi fundado o partido republicano', 'Substitua uma força monarquista no Rio de Janeiro por uma Republicana\nSubstitua uma força monarquista no sudeste por uma republicana ', 5, 
                    [norde, 'tira', 1], [rio, 'add', 1], [sudes, 'add', 1], [sudes, 'tira', 1], [rio, 'tira', 1])
-carta6 = EventCard('Charges em jornais', 'Jornalistas, intelectuais e artistas estão criticando\no império e o imperador nos periódicos brasileiros', 'Substitua uma força monarquista no Rio de Janeiro por uma republicana\nSubstitua uma força monarquista no nordeste por uma republicana\nRetire uma força monarquista no sudeste', 6, 
+carta6 = EventCard('Charges em jornais', ' \nJornalistas, intelectuais e artistas estão criticando\no império e o imperador nos periódicos brasileiros', 'Substitua uma força monarquista no Rio de Janeiro por uma republicana\nSubstitua uma força monarquista no nordeste por uma republicana\nRetire uma força monarquista no sudeste', 6, 
                    [norde, 'tira', 1], [rio, 'add', 1], [norde, 'add', 1], [sudes, 'tira', 1], [rio, 'tira', 1])
-carta7 = EventCard('Demissão de ministros', 'Marechal Deodoro da Fonseca, aliado do imperador,\nobriga o ministro Visconde de Ouro Preto a se demitir', 'Substitua duas forças monarquistas no Rio de Janeiro por republicanas\nSubstitua duas forças monarquistas no sudeste por republicanas\nRetire uma força monarquista do nordeste\nRetire uma força monarquista do norte', 7, 
+carta7 = EventCard('Demissão de ministros', '\nMarechal Deodoro da Fonseca, aliado do imperador,\nobriga o ministro Visconde de Ouro Preto a se demitir', 'Substitua duas forças monarquistas no Rio de Janeiro por republicanas\nSubstitua duas forças monarquistas no sudeste por republicanas\nRetire uma força monarquista do nordeste\nRetire uma força monarquista do norte', 7, 
                    [norde, 'tira', 1], [rio, 'add', 2], [sudes, 'add', 2], [sudes, 'tira', 2], [rio, 'tira', 2], [norte, 'tira', 1])
 #criação da lista de cartas
 lista_cartas = []
@@ -307,23 +366,22 @@ todas_as_sprites.add(dado)
 def turno1():
     sorteado = False
     cartadavez = sortear_carta(cartas_restantes)
-        
+    aplicado = True    
     while True:        
-        TELA.blit(IMAGEM_BACKGROUND, (0, 0))
-        TELA.blit(IMAGEM_PLACAR, (890, 90))#lugar ótimo já
+        TELA.blit(IMAGEM_BACKGROUND, (0, 0))        
         #título da carta sorteada
         fundo_texto_title = pygame.transform.scale(IMAGEM_TEXTO, (600, 230-100))
         texto_title = f"{cartadavez.title}"
         texto_linha = FONTE_TEXTOS.render(texto_title, True, (0, 0, 0))        
         pos_fundo_texto_x = 100
         pos_texto_x = pos_fundo_texto_x + 200
-        TELA.blit(fundo_texto_title, (pos_fundo_texto_x, 80))
-        TELA.blit(texto_linha, (pos_texto_x, 130))
+        TELA.blit(fundo_texto_title, (pos_fundo_texto_x, 50))
+        TELA.blit(texto_linha, (pos_texto_x, 100))
         #descrição da carta sorteada
-        fundo_texto_desc = pygame.transform.scale(IMAGEM_TEXTO, (600, 230-50))
+        fundo_texto_desc = pygame.transform.scale(IMAGEM_TEXTO, (600, 230))
         fundo_texto_desc_rect = fundo_texto_desc.get_rect()
         pos_fundo_texto_x = 100
-        pos_fundo_texto_y = 230
+        pos_fundo_texto_y = 180
         TELA.blit(fundo_texto_desc, (pos_fundo_texto_x, pos_fundo_texto_y))
         texto_desc = f"{cartadavez.descricao}"        
         pos_y = pos_fundo_texto_y + 50
@@ -332,34 +390,21 @@ def turno1():
             pos_x = fundo_texto_desc_rect.centerx +100 - texto_linha.get_width() //2
             TELA.blit(texto_linha, (pos_x, pos_y))
             pos_y += texto_linha.get_height() + 2
-             
+        #descrição do efeito
+        fundo_texto_efeito = pygame.transform.scale(IMAGEM_TEXTO, (600+400, 230+100))
+        TELA.blit(fundo_texto_efeito, (pos_fundo_texto_x, 450))
+        texto_efeito = f"{cartadavez.desc_efeito}"
+        fundo_texto_efeito_rect = fundo_texto_efeito.get_rect()        
+        pos_y = 550
+        for linha in texto_efeito.split('\n'):
+            texto_linha = FONTE_TEXTOS.render(linha, True, (0, 0, 0))        
+            pos_x = fundo_texto_efeito_rect.centerx +100 - texto_linha.get_width() //2
+            TELA.blit(texto_linha, (pos_x, pos_y))
+            pos_y += texto_linha.get_height() + 2     
         #placar
-        info_pontos = placar.update()    
-        linhas_info = info_pontos.split('\n')
-        pos_y_placar = 115
-        for linha_placar in linhas_info:
-            texto_linha = FONTE_PONTOS.render(linha_placar, True, (0, 0, 0))
-            pos_x_placar = largura // 2 - texto_linha.get_width() // 2 +390 # Centraliza horizontalmente
-            TELA.blit(texto_linha, (pos_x_placar, pos_y_placar))
-            pos_y_placar += texto_linha.get_height() + 5  # Espaçamento entre as linhas
+        mostrar_placar()
         #botões    
-        GAME_MOUSE_POS = pygame.mouse.get_pos()
-        norte_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(420, 468), text_input='Norte',
-                            font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
-        norde_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(790, 468), text_input='Nordeste',
-                            font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
-        rio_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(420, 590), text_input='Norte',
-                            font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
-        sudes_buton = Button(pygame.image.load(os.path.join('images', 'botao_regiao.png')), pos=(790, 590), text_input='Norte',
-                            font=FONTE_TEXTOS, hovering_color=pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
-        norte_buton.update(TELA)
-        norde_buton.update(TELA)
-        rio_buton.update(TELA)
-        sudes_buton.update(TELA)
-
-        for button in [norde_buton, norte_buton, rio_buton, sudes_buton]:
-            button.changeColor(GAME_MOUSE_POS, pygame.image.load(os.path.join('images', 'botao_regiao_clicado.png')))
-            button.update(TELA)
+        GAME_MOUSE_POS = pygame.mouse.get_pos() 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -376,18 +421,17 @@ def turno1():
                 if dado.checkForInput(GAME_MOUSE_POS):
                     sorteado = True
                     
+                    
         text_dado = "Jogue um dado para testar sua sorte"
         text_dado_renderizado = FONTE_TEXTOS.render(text_dado, True, (0, 0, 0))
         x_text_dado = largura //2 - text_dado_renderizado.get_width() // 2
         y_text_dado = 700
-        TELA.blit(text_dado_renderizado, (x_text_dado, y_text_dado))      
+        TELA.blit(text_dado_renderizado, (x_text_dado, y_text_dado-40))      
         if sorteado == False:            
             todas_as_sprites.draw(TELA)
             todas_as_sprites.update()
         if sorteado == True:
-            number = dado.sorteado()
-            dado_evento = dice_result(number)
-            dado_evento.dice_event(TELA, IMAGEM_BG_DESC_EVENTO, IMAGEM_BG_TITULO_EVENTO, FONTE_TEXTOS)
+            efeito_func(cartadavez)
         pygame.display.update()
 
         
